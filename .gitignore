@@ -1,0 +1,15 @@
+# datasets
+stage1_train/
+stage1_test/
+
+# optional: logs, models
+logs/
+*.h5
+*.ckpt
+*.pth
+*.pt
+
+# python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
