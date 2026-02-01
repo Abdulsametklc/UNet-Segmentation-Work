@@ -1,3 +1,7 @@
+'''This script reads image+mask data in a Kaggle DSB2018-like array structure,rescales all images to 128x128,
+converts multiple instance masks into a single binary mask, and trains a U-Net model with TensorFlow/Keras. 
+After training, predictive masks are generated for training/validation/testing, and sample outputs are visualized.'''
+
 import tensorflow as tf
 import os
 import numpy as np
@@ -23,7 +27,7 @@ train_ids = next(os.walk(TRAIN_PATH))[1]
 test_ids = next(os.walk(TEST_PATH))[1]
 
 X_train = np.zeros((len(train_ids),IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype = np.uint8)
-Y_train = np.zeros((len(train_ids),IMG_HEIGHT, IMG_WIDTH,1), dtype=np.bool)
+Y_train = np.zeros((len(train_ids),IMG_HEIGHT, IMG_WIDTH,1), dtype=bool)
 
 print('resizing training images and masks')
 for n, id_ in tqdm(enumerate(train_ids), total=len(train_ids)):
@@ -31,7 +35,7 @@ for n, id_ in tqdm(enumerate(train_ids), total=len(train_ids)):
     img = imread(path + '/images/' + id_ + '.png')[:,:,:IMG_CHANNELS]
     img = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode = 'constant', preserve_range=True)
     X_train[n] = img
-    mask = np.zeros((IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
+    mask = np.zeros((IMG_HEIGHT, IMG_WIDTH, 1), dtype=bool)
     for mask_file in next(os.walk(path + '/masks/'))[2]:
         mask_ = imread(path + '/masks/' + mask_file)
         mask_ = np.expand_dims(resize(mask_, (IMG_HEIGHT, IMG_WIDTH), mode = 'constant', preserve_range= True), axis=-1)
