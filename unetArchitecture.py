@@ -8,7 +8,9 @@ import matplotlib.pyplot as plt
 import random
 
 seed = 42
-np.random.seed = seed
+np.random.seed(seed)
+random.seed(seed)
+tf.random.set_seed(seed)
 
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
@@ -47,7 +49,7 @@ for n, id_ in tqdm(enumerate(test_ids), total =len(test_ids)):
     X_test[n] = img
 print('DONE!')
 
-image_x = random.randint(0, len(train_ids))
+image_x = random.randint(0, len(train_ids)-1)
 imshow(X_train[image_x])
 plt.show()
 imshow(np.squeeze(Y_train[image_x]))
@@ -77,7 +79,7 @@ p3 = tf.keras.layers.MaxPooling2D((2,2))(c3)
 
 c4 = tf.keras.layers.Conv2D(128, (3,3), activation = 'relu', kernel_initializer = 'he_normal', padding='same')(p3)
 c4 = tf.keras.layers.Dropout(0.2)(c4)
-c4 = tf.keras.layers.Conv2D(128, (3,3), activatİON = 'relu', kernel_initializer = 'he_normal', padding = 'same')(c4)
+c4 = tf.keras.layers.Conv2D(128, (3,3), activation = 'relu', kernel_initializer = 'he_normal', padding = 'same')(c4)
 p4 = tf.keras.layers.MaxPooling2D((2,2))(c4)
 
 c5 = tf.keras.layers.Conv2D(256, (3,3), activation = 'relu', kernel_initializer = 'he_normal', padding='same')(p4)
@@ -120,21 +122,21 @@ checkpointer = tf.keras.callbacks.ModelCheckpoint('unet.h5', verbose = 1, save_b
 
 callbacks = [
     tf.keras.callbacks.EarlyStopping(patience = 2, monitor = 'val_loss'),
-    tf.keras.calllbacks.TensorBoard(log_dir='logs')]
+    tf.keras.callbacks.TensorBoard(log_dir='logs')]
 
 results = model.fit(X_train, Y_train, validation_split = 0.1, batch_size = 16, epochs = 25, callbacks=callbacks)
 
-idx = random.randint(0, len(X_train))
+idx = random.randint(0, len(X_train)-1)
 
 preds_train = model.predict(X_train[:int(X_train.shape[0]*0.9)], verbose = 1)
 preds_val = model.predict(X_train[:int(X_train.shape[0]*0.9):], verbose = 1)
-preds_test = model.predict(X_test, vebose=1)
+preds_test = model.predict(X_test, verbose=1)
 
 preds_train_t = (preds_train > 0.5).astype(np.uint8)
 preds_val_t= (preds_val > 0.5).astype(np.uint8)
 preds_test_t = (preds_test > 0.5).astype(np.uint8)
 
-ix = random.randint(0, len(preds_train_t))
+ix = random.randint(0, len(preds_train_t)-1)
 imshow(X_train[ix])
 plt.show()
 imshow(np.squeeze(Y_train[ix]))
@@ -142,7 +144,7 @@ plt.show()
 imshow(np.squeeze(preds_train_t[ix]))
 plt.show()
 
-ix = random.randint(0, len(preds_val_t))
+ix = random.randint(0, len(preds_val_t)-1)
 imshow(X_train[int(X_train.shape[0]*0.9):][ix])
 plt.show()
 imshow(np.squeeze(Y_train[int(Y_train.shape[0]*0.9):][ix]))
